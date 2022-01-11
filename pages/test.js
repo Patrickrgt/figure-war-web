@@ -1,7 +1,6 @@
 import Web3 from "web3";
 import React, { useState, useEffect } from "react";
 import War from "./abi.json";
-import { Main } from "next/document";
 
 export default function Test() {
   // Contract Address

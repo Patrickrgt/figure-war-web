@@ -18,19 +18,26 @@ export default function Test() {
   // User Address
   const [userAddress, setUserAddress] = useState("");
 
+  //   Go to war
+  const [warBinary, setWarBinary] = useState(false);
+  let goToWar = () => setWarBinary(!warBinary);
+
   //   Price Per Mint
-  const [pricePer, setPricePer] = useState(0);
+  //   const [pricePer, setPricePer] = useState(0);
+
+  //   Mint Parameters Color
+  const [mintParameters, setMintParameters] = useState(0);
 
   //   Mint amount
-  const [mintAmount, setMintAmount] = useState(1);
-  let incrementMintAmount = () => setMintAmount(mintAmount + 1);
-  let decrementMintAmount = () => setMintAmount(mintAmount - 1);
+  //   const [mintAmount, setMintAmount] = useState(1);
+  //   let incrementMintAmount = () => setMintAmount(mintAmount + 1);
+  //   let decrementMintAmount = () => setMintAmount(mintAmount - 1);
 
-  if (mintAmount <= 0) {
-    decrementMintAmount = () => setMintAmount(0);
-  } else if (mintAmount >= 10) {
-    incrementMintAmount = () => setMintAmount(10);
-  }
+  //   if (mintAmount <= 0) {
+  //     decrementMintAmount = () => setMintAmount(0);
+  //   } else if (mintAmount >= 10) {
+  //     incrementMintAmount = () => setMintAmount(10);
+  //   }
 
   useEffect(() => {
     loadWeb3();
@@ -66,20 +73,43 @@ export default function Test() {
     console.log(warContract);
   }
 
-  //   async function mintWar() {
-  //     const gasAmount = await warContract.methods
-  //       .mintWar(warAmount)
-  //       .estimateGas({ from: userAddress, value: 0 });
-  //   }
+  async function mintWar() {
+    const gasAmount = await warContract.methods
+      .mint(1)
+      .estimateGas({ from: userAddress, value: 0 });
+
+    await warContract.methods
+      .mint(mintParameters)
+      .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+      .on("transactionHash", function (hash) {
+        console.log("transactionHash", hash);
+      });
+  }
 
   return (
     <main>
-      <button onClick={decrementMintAmount}>-</button>
-      <h1>{mintAmount}</h1>
-      {/* <input onChange={(e) => setMintAmount(e.target.value)}></input> */}
-      <button onClick={incrementMintAmount}>+</button>
+      {userAddress ? (
+        <h1>connected</h1>
+      ) : (
+        <button onClick={() => loadWeb3()}>connect wallet</button>
+      )}
 
-      <button onClick={() => mintWar()}>mint</button>
+      {/* <button onClick={decrementMintAmount}>-</button> */}
+      {/* <input onChange={(e) => setMintAmount(e.target.value)}></input> */}
+      {/* <button onClick={incrementMintAmount}>+</button> */}
+
+      {warBinary ? (
+        <div>
+          <h1>Would you like to go to war?</h1>
+          <button onClick={goToWar}>Yes</button>
+          <button onClick={goToWar}>No</button>
+        </div>
+      ) : (
+        <div>
+          <button onClick={goToWar}>x</button>
+          <button onClick={() => mintWar()}>mint</button>
+        </div>
+      )}
     </main>
   );
 }

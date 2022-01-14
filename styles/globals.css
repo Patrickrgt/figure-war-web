@@ -101,6 +101,14 @@ a {
   border: 2px solid black;
   border-radius: 0 15px 15px 0;
   padding: 0 12px;
-
 }
 
+.unable-mint-button {
+  color: rgba(0, 0, 0, 0.363);
+  font-size: 4vh;
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid black;
+  border-radius: 0 15px 15px 0;
+  padding: 0 12px;
+}

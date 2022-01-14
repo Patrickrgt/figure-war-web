@@ -59,6 +59,9 @@ export default function Test() {
   //   Error Message
   const [errMsg, setErrMsg] = useState("Please input color here");
 
+  //   Network
+  const [network, setNetwork] = useState("");
+
   //   Mint amount
   //   const [mintAmount, setMintAmount] = useState(1);
   //   let incrementMintAmount = () => setMintAmount(mintAmount + 1);
@@ -86,6 +89,7 @@ export default function Test() {
 
     window.ethereum.enable().then((accounts) => {
       window.web3.eth.net.getNetworkType().then((network) => {
+        setNetwork(network);
         if (network !== "rinkeby") {
           alert(
             `You are on the ${network} network. Please switch to the Rinkeby network for testing.`
@@ -105,20 +109,28 @@ export default function Test() {
   }
 
   async function mintWar() {
-    try {
-      const gasAmount = await warContract.methods
-        .mint(1)
-        .estimateGas({ from: userAddress, value: 0 });
-
-      await warContract.methods
-        .mint(warColor)
-        .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-        .on("transactionHash", function (hash) {
-          console.log("transactionHash", hash);
-        });
-    } catch {
-      setErrMsg("input 0 for white 1 for black");
-    }
+    window.web3 = new Web3(window.ethereum);
+    window.web3.eth.net.getNetworkType().then(async (network) => {
+      if (network !== "rinkeby") {
+        alert(
+          `You are on the ${network} network. Please switch to the Rinkeby network for testing.`
+        );
+      } else {
+        try {
+          const gasAmount = await warContract.methods
+            .mint(1)
+            .estimateGas({ from: userAddress, value: 0 });
+          await warContract.methods
+            .mint(warColor)
+            .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+            .on("transactionHash", function (hash) {
+              console.log("transactionHash", hash);
+            });
+        } catch {
+          setErrMsg("input 0 for white 1 for black");
+        }
+      }
+    });
   }
 
   return (
@@ -161,9 +173,13 @@ export default function Test() {
             placeholder={errMsg}
             onChange={(e) => setWarColor(e.target.value)}
           ></input>
-          <button className="mint-button" onClick={() => mintWar()}>
-            mint
-          </button>
+          {network !== "rinkeby" ? (
+            <button className="unable-mint-button">mint</button>
+          ) : (
+            <button className="mint-button" onClick={() => mintWar()}>
+              mint
+            </button>
+          )}
         </div>
       )}
     </main>

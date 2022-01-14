@@ -17,15 +17,47 @@ export default function Test() {
   // User Address
   const [userAddress, setUserAddress] = useState("");
 
-  //   Go to war
-  const [warBinary, setWarBinary] = useState(false);
-  let goToWar = () => setWarBinary(!warBinary);
+  //   War Header
+  const [warHeader, setWarHeader] = useState("Would you like to go to war?");
+  let changeWarHeader = () => {
+    var comments = [
+      "Press yes dumbass",
+      "Okay whatever",
+      "So why are you here",
+      "Get lost fool",
+      "Ok nice joke now press yes",
+      "Ok pussy",
+    ];
+    var random = Math.floor(Math.random() * comments.length);
+    var randomComment = comments[random];
+    if (randomComment === warHeader) {
+      changeWarHeader();
+    } else setWarHeader(randomComment);
+  };
 
-  //   Price Per Mint
-  //   const [pricePer, setPricePer] = useState(0);
+  //   Go to war
+  const [warBinary, setWarBinary] = useState(true);
+  let goToWar = () => {
+    setWarHeader("Would you like to go to war?");
+    if (userAddress) {
+      setWarBinary(!warBinary);
+    } else {
+      loadWeb3();
+      setConnectMsg("Please connect to MetaMask");
+    }
+  };
+
+  //   NFT Color
+  const [warColor, setWarColor] = useState();
 
   //   Mint Parameters Color
   const [mintParameters, setMintParameters] = useState(0);
+
+  //   Connect Message
+  const [connectMsg, setConnectMsg] = useState("");
+
+  //   Error Message
+  const [errMsg, setErrMsg] = useState("Please input color here");
 
   //   Mint amount
   //   const [mintAmount, setMintAmount] = useState(1);
@@ -73,40 +105,65 @@ export default function Test() {
   }
 
   async function mintWar() {
-    const gasAmount = await warContract.methods
-      .mint(1)
-      .estimateGas({ from: userAddress, value: 0 });
+    try {
+      const gasAmount = await warContract.methods
+        .mint(1)
+        .estimateGas({ from: userAddress, value: 0 });
 
-    await warContract.methods
-      .mint(mintParameters)
-      .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-      .on("transactionHash", function (hash) {
-        console.log("transactionHash", hash);
-      });
+      await warContract.methods
+        .mint(warColor)
+        .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+        .on("transactionHash", function (hash) {
+          console.log("transactionHash", hash);
+        });
+    } catch {
+      setErrMsg("input 0 for white 1 for black");
+    }
   }
 
   return (
     <main>
-      {userAddress ? (
-        <h1>connected</h1>
-      ) : (
-        <button onClick={() => loadWeb3()}>connect wallet</button>
-      )}
+      <section className="connect-container">
+        {userAddress ? (
+          <button className="connect-button">
+            ...{userAddress.substring(36)}
+          </button>
+        ) : (
+          <button className="connect-button" onClick={() => loadWeb3()}>
+            connect wallet
+          </button>
+        )}
+      </section>
 
       {/* <button onClick={decrementMintAmount}>-</button> */}
       {/* <input onChange={(e) => setMintAmount(e.target.value)}></input> */}
       {/* <button onClick={incrementMintAmount}>+</button> */}
 
       {warBinary ? (
-        <div>
-          <h1>Would you like to go to war?</h1>
-          <button onClick={goToWar}>Yes</button>
-          <button onClick={goToWar}>No</button>
+        <div className="war-container">
+          <h1>{warHeader}</h1>
+          <h2>{connectMsg}</h2>
+          <button className="war-button" onClick={goToWar}>
+            Yes
+          </button>
+          <button className="war-button" onClick={changeWarHeader}>
+            No
+          </button>
         </div>
       ) : (
-        <div>
-          <button onClick={goToWar}>x</button>
-          <button onClick={() => mintWar()}>mint</button>
+        <div className="mint-container">
+          <button className="mint-x" onClick={goToWar}>
+            x
+          </button>
+          <input
+            className="mint-input"
+            type="number"
+            placeholder={errMsg}
+            onChange={(e) => setWarColor(e.target.value)}
+          ></input>
+          <button className="mint-button" onClick={() => mintWar()}>
+            mint
+          </button>
         </div>
       )}
     </main>

@@ -12,5 +12,95 @@ a {
 }
 
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
+
+/* Connection/Nav Styling */
+.connect-container {
+  text-align: right;
+}
+
+.connect-button {
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid black;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 4vh;
+  transition: all ease 1s;
+}
+
+.connect-button:hover {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+/* Connection/Nav Styling */
+.war-container {
+  text-align: center;
+  font-size: 4vh;
+}
+
+.war-container h1 {
+  text-transform: uppercase;
+}
+
+.war-button {
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid black;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 4vh;
+  transition: all ease .3s;
+  margin: 4vh;
+}
+
+.war-button:hover {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+/* Mint Styling */
+
+.mint-container {
+  text-align: center;
+}
+
+.mint-container button {
+  transition: ease all 1s;
+  cursor: pointer;
+}
+
+.mint-container button:hover {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+}
+
+.mint-input {
+  font-size: 4vh;
+  border: 2px solid black;
+  padding: 0 12px;
+}
+
+.mint-x {
+  font-size: 4vh;
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid black;
+  border-radius: 15px 0 0 15px;
+  padding: 0 12px;
+}
+
+.mint-button {
+  font-size: 4vh;
+  text-align: center;
+  background: rgba(255, 255, 255, 0);
+  border: 2px solid black;
+  border-radius: 0 15px 15px 0;
+  padding: 0 12px;
+
+}
+

@@ -45,6 +45,18 @@ export default function Test() {
   //   Network
   const [network, setNetwork] = useState("");
 
+  const [bgColor, setBGColor] = React.useState("");
+  const bgStyles = {
+    "background-color": bgColor,
+    transition: "all ease 1s",
+  };
+
+  const [hColor, setHColor] = React.useState("");
+  const hStyles = {
+    color: hColor,
+    transition: "all ease 1s",
+  };
+
   //   Mint amount
   //   const [mintAmount, setMintAmount] = useState(1);
   //   let incrementMintAmount = () => setMintAmount(mintAmount + 1);
@@ -58,7 +70,7 @@ export default function Test() {
 
   useEffect(() => {
     loadWeb3();
-    console.log("Calling wallet and contract");
+    // console.log("Calling wallet and contract");
   }, []);
 
   async function loadWeb3() {
@@ -79,7 +91,7 @@ export default function Test() {
           );
         } else {
           setUserAddress(accounts[0]);
-          console.log(userAddress);
+          // console.log(userAddress);
           callContract();
         }
       });
@@ -88,41 +100,40 @@ export default function Test() {
 
   async function callContract() {
     await setWarContract(new window.web3.eth.Contract(abi, contractAddress));
-    console.log(warContract);
+    // console.log(warContract);
   }
 
   async function mintWar(e) {
-    console.log("running");
-    console.log(e);
-    window.web3 = new Web3(window.ethereum);
-    window.web3.eth.net.getNetworkType().then(async (network) => {
-      if (network !== "rinkeby") {
-        alert(
-          `You are on the ${network} network. Please switch to the Rinkeby network for testing.`
-        );
-      } else {
-        try {
-          if (e === "Yes") {
-            await setWarColor(1);
-          } else await setWarColor(0);
-          const gasAmount = await warContract.methods
-            .mint(warColor)
-            .estimateGas({ from: userAddress, value: 0 });
-          await warContract.methods
-            .mint(warColor)
-            .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-            .on("transactionHash", function (hash) {
-              console.log("transactionHash", hash);
-            });
-        } catch {
-          setErrMsg("input 0 for white 1 for black");
-        }
+    // console.log("running");
+    // console.log(e);
+    // window.web3 = new Web3(window.ethereum);
+
+    if (network !== "rinkeby") {
+      alert(
+        `You are on the ${network} network. Please switch to the Rinkeby network for testing.`
+      );
+    } else {
+      try {
+        if (e === "Yes") {
+          await setWarColor(1);
+        } else await setWarColor(0);
+        const gasAmount = await warContract.methods
+          .mint(warColor)
+          .estimateGas({ from: userAddress, value: 0 });
+        await warContract.methods
+          .mint(warColor)
+          .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+          .on("transactionHash", function (hash) {
+            console.log("transactionHash", hash);
+          });
+      } catch (err) {
+        console.log(err);
       }
-    });
+    }
   }
 
   return (
-    <main>
+    <main id="main-container" style={bgStyles}>
       <section className="connect-container">
         {userAddress ? (
           <button className="connect-button">
@@ -140,16 +151,26 @@ export default function Test() {
       {/* <button onClick={incrementMintAmount}>+</button> */}
 
       <div className="war-container">
-        <h1>Would you like to go to war?</h1>
+        <h1 style={hStyles}>Would you like to go to war?</h1>
         <h2>{connectMsg}</h2>
         <button
-          className="war-button"
+          className="war-button-yes"
+          onMouseEnter={() => {
+            setHColor("rgb(255, 255, 255)");
+            setBGColor("rgb(0, 0, 0)");
+          }}
+          onMouseLeave={() => setBGColor("")}
           onClick={(e) => mintWar(e.target.innerText)}
         >
           Yes
         </button>
         <button
-          className="war-button"
+          className="war-button-no"
+          onMouseEnter={() => {
+            setHColor("rgb(0, 0, 0)");
+            setBGColor("rgb(255, 255, 255)");
+          }}
+          onMouseLeave={() => setBGColor("")}
           onClick={(e) => mintWar(e.target.innerText)}
         >
           No

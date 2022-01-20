@@ -47,34 +47,21 @@ export default function Test() {
   const [network, setNetwork] = useState("");
 
   const [bgColor, setBGColor] = React.useState("");
-
-  const [offX, setOffX] = useState(0);
-  const [offY, setOffY] = useState(0);
   const bgStyles = {
     "background-color": bgColor,
     transition: "all ease 1s",
-    "--maskX": offX,
-    "--maskY": offY,
-  };
-  const cloneBgStyles = {
-    "background-color": bgColor,
   };
 
   const [mousePosition, setMousePosition] = useState(0);
   const [windowW, setWindowW] = useState(0);
   const [windowH, setWindowH] = useState(0);
-
   const [xTranslate, setXTranslate] = useState(0);
   const [yTranslate, setYTranslate] = useState(0);
-  const [hColor, setHColor] = React.useState("white");
-  const [hCloneColor, setHCloneColor] = React.useState("black");
-
+  const [hColor, setHColor] = React.useState("");
   const hStyles = {
     color: hColor,
-  };
-
-  const hCloneStyles = {
-    color: hCloneColor,
+    transition: "all ease 1s",
+    transform: `translateX(${xTranslate}px) translateY(${yTranslate}px)`,
   };
 
   //   Mint amount
@@ -89,8 +76,8 @@ export default function Test() {
   //   }
 
   useEffect(() => {
-    // var scene = document.getElementById("scene");
-    // var parallaxInstance = new Parallax(scene);
+    var scene = document.getElementById("scene");
+    var parallaxInstance = new Parallax(scene);
     setWindowW(window.innerWidth);
     setWindowH(window.innerHeight);
     window.addEventListener("mousemove", parallax);
@@ -165,28 +152,9 @@ export default function Test() {
     }
   }
 
-  function mouseMove(e) {
-    const width = e.target.clientWidth;
-    const height = e.target.clientHeight;
-    const oX = (e.nativeEvent.offsetX / width) * 100;
-    const oY = (e.nativeEvent.offsetX / height) * 100;
-    setOffX(oX);
-    setOffY(oY);
-    console.log(offX, offY);
-  }
-
-  function mouseOut(e) {
-    const width = e.target.clientWidth;
-    const height = e.target.clientHeight;
-    setOffX(50);
-    setOffY(50);
-  }
-
   return (
     <main
       id="main-container"
-      onMouseMove={(e) => mouseMove(e)}
-      onMouseOut={(e) => mouseOut(e)}
       style={bgStyles}
       // onMouseEnter={(e) => {
       //   console.log(e);
@@ -194,7 +162,6 @@ export default function Test() {
       //   setYTranslate(mousePosition.clientY);
       // }}
     >
-      <main style={cloneBgStyles} id="main-clone-container"></main>
       <section className="connect-container">
         {userAddress ? (
           <button className="connect-button">
@@ -212,19 +179,10 @@ export default function Test() {
       {/* <button onClick={incrementMintAmount}>+</button> */}
 
       <div className="war-container">
-        {/* <div id="scene">
+        <div id="scene">
           <h1 data-depth="0.5">Would you like to go to war?</h1>
-        </div> */}
-        <div className="header-container">
-          <article className="header">
-            <h1 style={hStyles}>Would you like to go to war?</h1>
-          </article>
-          <article className="header clone-header">
-            <h1 style={hCloneStyles}>Would you like to go to war?</h1>
-          </article>
         </div>
-
-        {/* <h1 style={hStyles}>Would you like to go to war?</h1> */}
+        <h1 style={hStyles}>Would you like to go to war?</h1>
 
         <h2>{connectMsg}</h2>
         <button
@@ -232,14 +190,8 @@ export default function Test() {
           onMouseEnter={() => {
             setHColor("rgb(255, 255, 255)");
             setBGColor("rgb(0, 0, 0)");
-            setHColor("white");
-            setHCloneColor("white");
           }}
-          onMouseLeave={() => {
-            setBGColor("");
-            setHColor("white");
-            setHCloneColor("black");
-          }}
+          onMouseLeave={() => setBGColor("")}
           onClick={(e) => mintWar(e.target.innerText)}
         >
           Yes
@@ -249,14 +201,8 @@ export default function Test() {
           onMouseEnter={() => {
             setHColor("rgb(0, 0, 0)");
             setBGColor("rgb(255, 255, 255)");
-            setHColor("black");
-            setHCloneColor("black");
           }}
-          onMouseLeave={() => {
-            setBGColor("");
-            setHColor("white");
-            setHCloneColor("black");
-          }}
+          onMouseLeave={() => setBGColor("")}
           onClick={(e) => mintWar(e.target.innerText)}
         >
           No

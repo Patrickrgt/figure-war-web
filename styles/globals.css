@@ -12,6 +12,7 @@ a {
 }
 
 * {
+  overflow: hidden;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -19,8 +20,43 @@ a {
 
 /* Main Container */
 #main-container {
+
+  /* display: flex; */
+  justify-content: center;
+  background: rgb(0, 0, 0);
+  height: 100vh;
+  --maskX: 0;
+  --maskY: 50;
+}
+
+.header-container {
+  position: relative;
+}
+
+.header {
+  color: white;
+}
+
+.clone-header {
+  color: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;  
+  transition: all 0.8s cubic-bezier(0.165,0.84,0.44,1);
+  clip-path: polygon(0 0, calc(var(--maskX) * 1% + (var(--maskY) - 50) * .4%) 0, calc(var(--maskY) * 1% + (var(--maskY) - 50) * -.4%) 100%, 0 100%);
+}
+
+#main-clone-container {
   background: rgb(100, 100, 100);
   height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgb(255, 255, 255);
+  transition: all 0.8s cubic-bezier(0.165,0.84,0.44,1);
+  clip-path: polygon(0 0, calc(var(--maskX) * 1%) 0, calc(var(--maskY) * 1%) 100%, 0 100%);
 }
 
 /* Connection/Nav Styling */
@@ -29,6 +65,9 @@ a {
 }
 
 .connect-button {
+  position: absolute;
+  top: 0;
+  left: 0;
   text-decoration: none;
   background: rgba(255, 255, 255, 0);
   border: 2px solid black;
@@ -45,12 +84,14 @@ a {
 
 /* Connection/Nav Styling */
 .war-container {
+  padding-top: 20vh;
   text-align: center;
   font-size: 4vh;
 }
 
 .war-container h1 {
   text-transform: uppercase;
+  position: relative;
 }
 
 .war-button {
@@ -120,6 +161,7 @@ a {
 }
 
 .war-button-yes {
+  position:relative;
   text-decoration: none;
   background: rgb(100, 100, 100);
   color: rgb(255, 255, 255);
@@ -137,6 +179,7 @@ a {
 }
 
 .war-button-no {
+  position:relative;
   text-decoration: none;
   background: rgb(100, 100, 100);
   color: rgb(255, 255, 255);

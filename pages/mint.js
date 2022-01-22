@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Web3 from "web3";
 import React, { useState, useEffect } from "react";
 import War from "./abi.json";
@@ -138,7 +139,7 @@ export default function Test() {
 
   async function mintWar(e) {
     // console.log("running");
-    // console.log(e);
+    console.log(e);
     // window.web3 = new Web3(window.ethereum);
 
     if (network !== "rinkeby") {
@@ -148,28 +149,33 @@ export default function Test() {
     } else {
       try {
         if (e === "Yes") {
-          await setWarColor(1);
-        } else await setWarColor(0);
-        const gasAmount = await warContract.methods
-          .mint(warColor)
-          .estimateGas({ from: userAddress, value: 0 });
-        await warContract.methods
-          .mint(warColor)
-          .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-          .on("transactionHash", function (hash) {
-            console.log("transactionHash", hash);
-          });
+          await setWarColor(0);
+        }
+        if (e === "No") await setWarColor(1);
+        await mint();
       } catch (err) {
         console.log(err);
       }
     }
   }
 
+  async function mint() {
+    const gasAmount = await warContract.methods
+      .mint(warColor)
+      .estimateGas({ from: userAddress, value: 0 });
+    await warContract.methods
+      .mint(warColor)
+      .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+      .on("transactionHash", function (hash) {
+        console.log("transactionHash", hash);
+      });
+  }
+
   function mouseMove(e) {
     const width = e.target.clientWidth;
     const height = e.target.clientHeight;
     const oX = (e.nativeEvent.offsetX / width) * 100;
-    const oY = (e.nativeEvent.offsetX / height) * 100;
+    const oY = (e.nativeEvent.offsetY / height) * 100;
     setOffX(oX);
     setOffY(oY);
     console.log(offX, offY);
@@ -183,85 +189,98 @@ export default function Test() {
   }
 
   return (
-    <main
-      id="main-container"
-      onMouseMove={(e) => mouseMove(e)}
-      onMouseOut={(e) => mouseOut(e)}
-      style={bgStyles}
-      // onMouseEnter={(e) => {
-      //   console.log(e);
-      //   setXTranslate(mousePosition.clientX);
-      //   setYTranslate(mousePosition.clientY);
-      // }}
-    >
-      <main style={cloneBgStyles} id="main-clone-container"></main>
-      <section className="connect-container">
-        {userAddress ? (
-          <button className="connect-button">
-            ...{userAddress.substring(36)}
-          </button>
-        ) : (
-          <button className="connect-button" onClick={() => loadWeb3()}>
-            connect wallet
-          </button>
-        )}
-      </section>
+    <div>
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https :: //fonts.googleapis.com/css2?family= Noto + Serif + JP & display = swap "
+          rel=" stylesheet "
+        />
+      </Head>
 
-      {/* <button onClick={decrementMintAmount}>-</button> */}
-      {/* <input onChange={(e) => setMintAmount(e.target.value)}></input> */}
-      {/* <button onClick={incrementMintAmount}>+</button> */}
+      <main
+        id="main-container"
+        onMouseMove={(e) => mouseMove(e)}
+        onMouseOut={(e) => mouseOut(e)}
+        style={bgStyles}
+        // onMouseEnter={(e) => {
+        //   console.log(e);
+        //   setXTranslate(mousePosition.clientX);
+        //   setYTranslate(mousePosition.clientY);
+        // }}
+      >
+        <main style={cloneBgStyles} id="main-clone-container"></main>
+        <section className="connect-container">
+          {userAddress ? (
+            <button className="connect-button">
+              ...{userAddress.substring(36)}
+            </button>
+          ) : (
+            <button className="connect-button" onClick={() => loadWeb3()}>
+              connect wallet
+            </button>
+          )}
+        </section>
 
-      <div className="war-container">
-        {/* <div id="scene">
+        {/* <button onClick={decrementMintAmount}>-</button> */}
+        {/* <input onChange={(e) => setMintAmount(e.target.value)}></input> */}
+        {/* <button onClick={incrementMintAmount}>+</button> */}
+
+        <div className="war-container">
+          {/* <div id="scene">
           <h1 data-depth="0.5">Would you like to go to war?</h1>
         </div> */}
-        <div className="header-container">
-          <article className="header">
-            <h1 style={hStyles}>Would you like to go to war?</h1>
-          </article>
-          <article className="header clone-header">
-            <h1 style={hCloneStyles}>Would you like to go to war?</h1>
-          </article>
+          <div className="header-container">
+            <article className="header">
+              <h1 style={hStyles}>Would you like to go to war?</h1>
+            </article>
+            <article className="header clone-header">
+              <h1 style={hCloneStyles}>Would you like to go to war?</h1>
+            </article>
+          </div>
+
+          {/* <h1 style={hStyles}>Would you like to go to war?</h1> */}
+
+          <h2>{connectMsg}</h2>
+          <button
+            className="war-button-yes"
+            onMouseEnter={() => {
+              setHColor("rgb(255, 255, 255)");
+              setBGColor("rgb(0, 0, 0)");
+              setHColor("white");
+              setHCloneColor("white");
+            }}
+            onMouseLeave={() => {
+              setBGColor("");
+              setHColor("white");
+              setHCloneColor("black");
+            }}
+            onClick={(e) => mintWar(e.target.innerText)}
+          >
+            Yes
+          </button>
+          <button
+            className="war-button-no"
+            onMouseEnter={() => {
+              setHColor("rgb(0, 0, 0)");
+              setBGColor("rgb(255, 255, 255)");
+              setHColor("black");
+              setHCloneColor("black");
+            }}
+            onMouseLeave={() => {
+              setBGColor("");
+              setHColor("white");
+              setHCloneColor("black");
+            }}
+            onClick={(e) => mintWar(e.target.innerText)}
+          >
+            No
+          </button>
         </div>
-
-        {/* <h1 style={hStyles}>Would you like to go to war?</h1> */}
-
-        <h2>{connectMsg}</h2>
-        <button
-          className="war-button-yes"
-          onMouseEnter={() => {
-            setHColor("rgb(255, 255, 255)");
-            setBGColor("rgb(0, 0, 0)");
-            setHColor("white");
-            setHCloneColor("white");
-          }}
-          onMouseLeave={() => {
-            setBGColor("");
-            setHColor("white");
-            setHCloneColor("black");
-          }}
-          onClick={(e) => mintWar(e.target.innerText)}
-        >
-          Yes
-        </button>
-        <button
-          className="war-button-no"
-          onMouseEnter={() => {
-            setHColor("rgb(0, 0, 0)");
-            setBGColor("rgb(255, 255, 255)");
-            setHColor("black");
-            setHCloneColor("black");
-          }}
-          onMouseLeave={() => {
-            setBGColor("");
-            setHColor("white");
-            setHCloneColor("black");
-          }}
-          onClick={(e) => mintWar(e.target.innerText)}
-        >
-          No
-        </button>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

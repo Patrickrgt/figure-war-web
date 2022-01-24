@@ -33,7 +33,7 @@ export default function Test() {
   };
 
   //   NFT Color
-  const [warColor, setWarColor] = useState();
+  const [warColor, setWarColor] = useState(0);
 
   //   Mint Parameters Color
   const [mintParameters, setMintParameters] = useState(0);
@@ -150,16 +150,33 @@ export default function Test() {
       try {
         if (e === "Yes") {
           await setWarColor(0);
+          // await mint(e);
         }
-        if (e === "No") await setWarColor(1);
-        await mint();
+        if (e === "No") {
+          await setWarColor(1);
+          // await mint(e);
+        }
       } catch (err) {
         console.log(err);
       }
     }
   }
 
-  async function mint() {
+  useEffect(() => {
+    if (warContract) {
+      console.log(warColor);
+      mintFunc();
+    }
+  }, [warColor]);
+
+  async function mintFunc() {
+    // if (e === "Yes") {
+    //   await setWarColor(0);
+    // }
+    // if (e === "No") {
+    //   await setWarColor(1);
+    // }
+
     const gasAmount = await warContract.methods
       .mint(warColor)
       .estimateGas({ from: userAddress, value: 0 });

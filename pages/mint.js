@@ -33,7 +33,7 @@ export default function Test() {
   };
 
   //   NFT Color
-  const [warColor, setWarColor] = useState(0);
+  const [warColor, setWarColor] = useState();
 
   //   Mint Parameters Color
   const [mintParameters, setMintParameters] = useState(0);

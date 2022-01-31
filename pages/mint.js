@@ -183,8 +183,18 @@ export default function Test() {
     await warContract.methods
       .mint(warColor)
       .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-      .on("transactionHash", function (hash) {
+      .on("transactionHash", async function (hash) {
         console.log("transactionHash", hash);
+        const interval = setInterval(function () {
+          console.log("Attempting to get transaction receipt...");
+          web3.eth.getTransactionReceipt(hash, function (err, rec) {
+            if (rec) {
+              console.log(rec);
+              console.log(rec.logs[1].topics[1]);
+              clearInterval(interval);
+            }
+          });
+        }, 1000);
       });
   }
 

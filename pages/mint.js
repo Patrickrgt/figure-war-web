@@ -2,7 +2,6 @@ import Head from "next/head";
 import Web3 from "web3";
 import React, { useState, useEffect } from "react";
 import War from "./abi.json";
-import Parallax from "parallax-js";
 
 export default function Test() {
   // Contract Address
@@ -20,6 +19,7 @@ export default function Test() {
   const [userAddress, setUserAddress] = useState("");
 
   //   War Header
+  const [warHeader, setWarHeader] = useState("Would you like to go to war?");
 
   //   Go to war
   const [warBinary, setWarBinary] = useState(true);
@@ -31,6 +31,9 @@ export default function Test() {
       setConnectMsg("Please connect to MetaMask");
     }
   };
+
+  // In minting process
+  const [minting, setMinting] = useState(false);
 
   //   NFT Color
   const [warColor, setWarColor] = useState();
@@ -67,8 +70,15 @@ export default function Test() {
 
   const [xTranslate, setXTranslate] = useState(0);
   const [yTranslate, setYTranslate] = useState(0);
+  const [mintStyleBg, setMintStyleBg] = React.useState();
+  const [mintStyleC, setMintStyleC] = React.useState();
   const [hColor, setHColor] = React.useState("white");
   const [hCloneColor, setHCloneColor] = React.useState("black");
+
+  const mintStyles = {
+    "background-color": mintStyleBg,
+    color: mintStyleC,
+  };
 
   const hStyles = {
     color: hColor,
@@ -77,6 +87,14 @@ export default function Test() {
   const hCloneStyles = {
     color: hCloneColor,
   };
+
+  // const bStyles1 = {
+
+  // }
+
+  // const bStyles0 = {
+
+  // }
 
   //   Mint amount
   //   const [mintAmount, setMintAmount] = useState(1);
@@ -149,18 +167,31 @@ export default function Test() {
     } else {
       try {
         if (e === "Yes") {
+          await setOffX(0);
+          await setOffY(0);
+          await setMintStyleBg("black");
+          await setMintStyleC("white");
           await setWarColor(0);
           // await mint(e);
         }
         if (e === "No") {
+          await setOffX(100);
+          await setOffY(100);
+          await setMintStyleBg("white");
+          await setMintStyleC("black");
           await setWarColor(1);
+
           // await mint(e);
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     }
   }
+
+  useEffect(() => {
+    if (minting) {
+      setWarHeader("Minting...");
+    } else setWarHeader("Would you like to go to war?");
+  }, [minting]);
 
   useEffect(() => {
     if (warContract) {
@@ -177,42 +208,55 @@ export default function Test() {
     //   await setWarColor(1);
     // }
 
-    const gasAmount = await warContract.methods
-      .mint(warColor)
-      .estimateGas({ from: userAddress, value: 0 });
-    await warContract.methods
-      .mint(warColor)
-      .send({ from: userAddress, value: 0, gas: String(gasAmount) })
-      .on("transactionHash", async function (hash) {
-        console.log("transactionHash", hash);
-        const interval = setInterval(function () {
-          console.log("Attempting to get transaction receipt...");
-          web3.eth.getTransactionReceipt(hash, function (err, rec) {
-            if (rec) {
-              console.log(rec);
-              console.log(rec.logs[1].topics[1]);
-              clearInterval(interval);
-            }
-          });
-        }, 1000);
-      });
+    setMinting(true);
+    try {
+      const gasAmount = await warContract.methods
+        .mint(warColor)
+        .estimateGas({ from: userAddress, value: 0 });
+      await warContract.methods
+        .mint(warColor)
+        .send({ from: userAddress, value: 0, gas: String(gasAmount) })
+        .on("transactionHash", async function (hash) {
+          console.log("transactionHash", hash);
+          const interval = setInterval(function () {
+            console.log("Attempting to get transaction receipt...");
+            web3.eth.getTransactionReceipt(hash, function (err, rec) {
+              if (rec) {
+                console.log(rec);
+                console.log(rec.logs[1].topics[1]);
+                clearInterval(interval);
+              }
+            });
+          }, 1000);
+        });
+    } catch {
+      setMinting(false);
+      await setWarColor();
+      await setMintStyleBg();
+      await setMintStyleC();
+      console.log("reject");
+    }
   }
 
   function mouseMove(e) {
-    const width = e.target.clientWidth;
-    const height = e.target.clientHeight;
-    const oX = (e.nativeEvent.offsetX / width) * 100;
-    const oY = (e.nativeEvent.offsetY / height) * 100;
-    setOffX(oX);
-    setOffY(oY);
-    console.log(offX, offY);
+    if (minting === false) {
+      const width = e.target.clientWidth;
+      const height = e.target.clientHeight;
+      const oX = (e.nativeEvent.offsetX / width) * 100;
+      const oY = (e.nativeEvent.offsetY / height) * 100;
+      setOffX(oX);
+      setOffY(oY);
+      console.log(offX, offY);
+    } else return;
   }
 
   function mouseOut(e) {
-    const width = e.target.clientWidth;
-    const height = e.target.clientHeight;
-    setOffX(50);
-    setOffY(50);
+    if (minting === false) {
+      const width = e.target.clientWidth;
+      const height = e.target.clientHeight;
+      setOffX(50);
+      setOffY(50);
+    } else return;
   }
 
   return (
@@ -262,10 +306,10 @@ export default function Test() {
         </div> */}
           <div className="header-container">
             <article className="header">
-              <h1 style={hStyles}>Would you like to go to war?</h1>
+              <h1 style={hStyles}>{warHeader}</h1>
             </article>
             <article className="header clone-header">
-              <h1 style={hCloneStyles}>Would you like to go to war?</h1>
+              <h1 style={hCloneStyles}>{warHeader}</h1>
             </article>
           </div>
 
@@ -274,6 +318,7 @@ export default function Test() {
           <h2>{connectMsg}</h2>
           <button
             className="war-button-yes"
+            // style={mintStyles}
             onMouseEnter={() => {
               setHColor("rgb(255, 255, 255)");
               setBGColor("rgb(0, 0, 0)");
@@ -291,6 +336,7 @@ export default function Test() {
           </button>
           <button
             className="war-button-no"
+            // style={mintStyles}
             onMouseEnter={() => {
               setHColor("rgb(0, 0, 0)");
               setBGColor("rgb(255, 255, 255)");
